@@ -1,0 +1,106 @@
+.members-list-container {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.filter-section {
+  margin-bottom: 24px;
+
+  .search-field {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
+.table-container {
+  overflow-x: auto;
+  position: relative;
+}
+
+.members-table {
+  width: 100%;
+
+  th {
+    font-weight: 600;
+    color: #666;
+  }
+
+  td, th {
+    padding: 12px 16px;
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+
+  &.badge-admin {
+    background: #ff6b35;
+    color: white;
+  }
+
+  &.badge-trainer {
+    background: #667eea;
+    color: white;
+  }
+
+  &.badge-member {
+    background: #4caf50;
+    color: white;
+  }
+
+  &.badge-plan {
+    background: #e3f2fd;
+    color: #1976d2;
+  }
+
+  &.badge-active {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.badge-inactive {
+    background: #ffebee;
+    color: #c62828;
+  }
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 10;
+}
+

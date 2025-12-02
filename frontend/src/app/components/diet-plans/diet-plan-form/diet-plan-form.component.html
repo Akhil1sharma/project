@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>{{ data.mode === 'add' ? 'Add' : 'Edit' }} Diet Plan</h2>
+<mat-dialog-content>
+  <form [formGroup]="dietPlanForm" class="diet-plan-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" required>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="3"></textarea>
+    </mat-form-field>
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Goal</mat-label>
+        <mat-select formControlName="goal">
+          <mat-option value="weight_loss">Weight Loss</mat-option>
+          <mat-option value="weight_gain">Weight Gain</mat-option>
+          <mat-option value="muscle_gain">Muscle Gain</mat-option>
+          <mat-option value="maintenance">Maintenance</mat-option>
+          <mat-option value="endurance">Endurance</mat-option>
+          <mat-option value="general_health">General Health</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Duration (days)</mat-label>
+        <input matInput type="number" formControlName="duration" required>
+      </mat-form-field>
+    </div>
+    <mat-form-field appearance="outline">
+      <mat-label>Daily Calories</mat-label>
+      <input matInput type="number" formControlName="dailyCalories">
+    </mat-form-field>
+    <mat-checkbox formControlName="isPublic">Make Public</mat-checkbox>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="dietPlanForm.invalid || loading">
+    {{ data.mode === 'add' ? 'Create' : 'Update' }}
+  </button>
+</mat-dialog-actions>
+

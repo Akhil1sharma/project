@@ -1,0 +1,54 @@
+<h2 mat-dialog-title>{{ data.mode === 'add' ? 'Add' : 'Edit' }} Exercise</h2>
+<mat-dialog-content>
+  <form [formGroup]="exerciseForm" class="exercise-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" required>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="3"></textarea>
+    </mat-form-field>
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="category">
+          <mat-option value="cardio">Cardio</mat-option>
+          <mat-option value="strength">Strength</mat-option>
+          <mat-option value="flexibility">Flexibility</mat-option>
+          <mat-option value="balance">Balance</mat-option>
+          <mat-option value="sports">Sports</mat-option>
+          <mat-option value="other">Other</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Difficulty</mat-label>
+        <mat-select formControlName="difficulty">
+          <mat-option value="beginner">Beginner</mat-option>
+          <mat-option value="intermediate">Intermediate</mat-option>
+          <mat-option value="advanced">Advanced</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <mat-form-field appearance="outline">
+      <mat-label>Equipment</mat-label>
+      <mat-select formControlName="equipment">
+        <mat-option value="bodyweight">Bodyweight</mat-option>
+        <mat-option value="dumbbells">Dumbbells</mat-option>
+        <mat-option value="barbell">Barbell</mat-option>
+        <mat-option value="machine">Machine</mat-option>
+        <mat-option value="cable">Cable</mat-option>
+        <mat-option value="kettlebell">Kettlebell</mat-option>
+        <mat-option value="resistance_band">Resistance Band</mat-option>
+        <mat-option value="other">Other</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="exerciseForm.invalid || loading">
+    {{ data.mode === 'add' ? 'Create' : 'Update' }}
+  </button>
+</mat-dialog-actions>
+

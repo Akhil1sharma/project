@@ -1,0 +1,61 @@
+<div class="diet-plans-list-container">
+  <div class="header">
+    <h2>Diet Plans</h2>
+    <button mat-raised-button color="primary" (click)="openAddDialog()" *ngIf="canEdit()">
+      <mat-icon>add</mat-icon> Add Diet Plan
+    </button>
+  </div>
+  <div class="filter-section">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search diet plans</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Search by name">
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+  </div>
+  <div class="table-container">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+        <td mat-cell *matCellDef="let plan">{{ plan.name }}</td>
+      </ng-container>
+      <ng-container matColumnDef="goal">
+        <th mat-header-cell *matHeaderCellDef>Goal</th>
+        <td mat-cell *matCellDef="let plan">{{ plan.goal | titlecase }}</td>
+      </ng-container>
+      <ng-container matColumnDef="duration">
+        <th mat-header-cell *matHeaderCellDef>Duration</th>
+        <td mat-cell *matCellDef="let plan">{{ plan.duration }} days</td>
+      </ng-container>
+      <ng-container matColumnDef="dailyCalories">
+        <th mat-header-cell *matHeaderCellDef>Daily Calories</th>
+        <td mat-cell *matCellDef="let plan">{{ plan.dailyCalories || '-' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="isPublic">
+        <th mat-header-cell *matHeaderCellDef>Public</th>
+        <td mat-cell *matCellDef="let plan">
+          <span class="badge" [class.badge-active]="plan.isPublic">{{ plan.isPublic ? 'Yes' : 'No' }}</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let plan">
+          <button mat-icon-button [matMenuTriggerFor]="menu" *ngIf="canEdit()">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="openEditDialog(plan)">
+              <mat-icon>edit</mat-icon><span>Edit</span>
+            </button>
+            <button mat-menu-item (click)="deleteDietPlan(plan)">
+              <mat-icon>delete</mat-icon><span>Delete</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+  </div>
+</div>
+

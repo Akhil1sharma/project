@@ -1,0 +1,6 @@
+@import '../../members/members-list/members-list.component.scss';
+
+.exercises-list-container {
+  @extend .members-list-container;
+}
+

@@ -1,0 +1,6 @@
+@import '../../members/members-list/members-list.component.scss';
+
+.diet-plans-list-container {
+  @extend .members-list-container;
+}
+

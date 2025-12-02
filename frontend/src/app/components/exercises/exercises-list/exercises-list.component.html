@@ -1,0 +1,55 @@
+<div class="exercises-list-container">
+  <div class="header">
+    <h2>Exercises</h2>
+    <button mat-raised-button color="primary" (click)="openAddDialog()" *ngIf="canEdit()">
+      <mat-icon>add</mat-icon> Add Exercise
+    </button>
+  </div>
+  <div class="filter-section">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search exercises</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Search by name">
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+  </div>
+  <div class="table-container">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+        <td mat-cell *matCellDef="let exercise">{{ exercise.name }}</td>
+      </ng-container>
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef>Category</th>
+        <td mat-cell *matCellDef="let exercise">{{ exercise.category | titlecase }}</td>
+      </ng-container>
+      <ng-container matColumnDef="difficulty">
+        <th mat-header-cell *matHeaderCellDef>Difficulty</th>
+        <td mat-cell *matCellDef="let exercise">{{ exercise.difficulty | titlecase }}</td>
+      </ng-container>
+      <ng-container matColumnDef="equipment">
+        <th mat-header-cell *matHeaderCellDef>Equipment</th>
+        <td mat-cell *matCellDef="let exercise">{{ exercise.equipment | titlecase }}</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let exercise">
+          <button mat-icon-button [matMenuTriggerFor]="menu" *ngIf="canEdit()">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="openEditDialog(exercise)">
+              <mat-icon>edit</mat-icon><span>Edit</span>
+            </button>
+            <button mat-menu-item (click)="deleteExercise(exercise)">
+              <mat-icon>delete</mat-icon><span>Delete</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+  </div>
+</div>
+

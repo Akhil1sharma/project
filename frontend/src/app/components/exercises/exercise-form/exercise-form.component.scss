@@ -1,0 +1,6 @@
+@import '../../workouts/workout-form/workout-form.component.scss';
+
+.exercise-form {
+  @extend .workout-form;
+}
+

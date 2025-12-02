@@ -68,20 +68,25 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// API Routes (to be implemented)
-// app.use('/api/auth', require('./routes/auth'));
-// app.use('/api/members', require('./routes/members'));
-// app.use('/api/ai', require('./routes/ai'));
-// app.use('/api/automation', require('./routes/automation'));
+// Import routes
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/users');
+const exerciseRoutes = require('./routes/exercises');
+const workoutRoutes = require('./routes/workouts');
+const dietPlanRoutes = require('./routes/dietPlans');
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    message: err.message || 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err : {}
-  });
-});
+// Import error handler
+const errorHandler = require('./middleware/errorHandler');
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/exercises', exerciseRoutes);
+app.use('/api/workouts', workoutRoutes);
+app.use('/api/diet-plans', dietPlanRoutes);
+
+// Error handling middleware (must be after routes)
+app.use(errorHandler);
 
 // 404 handler
 app.use((req, res) => {
