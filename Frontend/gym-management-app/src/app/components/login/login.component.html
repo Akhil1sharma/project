@@ -3,6 +3,12 @@
     <!-- Left Side - Form -->
     <div class="auth-form-section">
       <div class="form-content">
+        <!-- Logo -->
+        <div class="logo-container">
+          <img src="gympilot-logo.png" alt="GymPilot Logo" class="logo-image">
+          <h2 class="app-name">GymPilot</h2>
+        </div>
+        
         <h1 class="auth-title">Welcome Back</h1>
         <p class="auth-subtitle">
           A brand new day is here. It's your day to shape.<br>
@@ -129,11 +135,14 @@
     <!-- Right Side - Image -->
     <div class="auth-image-section">
       <div class="image-overlay"></div>
-      <img
-        src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop"
-        alt="Gym workout"
-        class="auth-image"
-      />
+      @for (image of gymImages; track image; let i = $index) {
+        <img
+          [src]="image"
+          [alt]="'Gym workout ' + (i + 1)"
+          class="auth-image"
+          [class.active]="i === currentImageIndex()"
+        />
+      }
     </div>
   </div>
 </div>

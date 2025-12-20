@@ -39,15 +39,17 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/gym-management', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/gym-management')
 .then(() => {
   console.log('✅ MongoDB connected successfully');
 })
 .catch((err) => {
   console.error('❌ MongoDB connection error:', err);
+  console.log('\n💡 To fix this:');
+  console.log('1. Go to MongoDB Atlas: https://cloud.mongodb.com');
+  console.log('2. Navigate to Network Access');
+  console.log('3. Click "Add IP Address"');
+  console.log('4. Either add your current IP or use 0.0.0.0/0 (allow all - for development only)\n');
   process.exit(1);
 });
 

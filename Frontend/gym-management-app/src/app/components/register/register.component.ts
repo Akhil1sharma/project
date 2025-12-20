@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -11,7 +11,7 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -21,6 +21,19 @@ export class RegisterComponent {
   errorMessage = signal<string | null>(null);
   showPassword = signal(false);
   showConfirmPassword = signal(false);
+  
+  // Image rotation
+  currentImageIndex = signal(0);
+  private imageRotationInterval?: ReturnType<typeof setInterval>;
+  
+  readonly gymImages = [
+    'low-angle-view-unrecognizable-muscular-build-man-preparing-lifting-barbell-health-club_637285-2497.avif',
+    'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop',
+    'man-gym-muscle-668bea4582855.avif',
+    'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=1470&auto=format&fit=crop',
+    'strong-muscular-sportsman-is-working-out-pull-weight-machine-gym_232070-22530.avif',
+    'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1470&auto=format&fit=crop'
+  ];
 
   constructor() {
     this.registerForm = this.fb.group({
@@ -35,6 +48,22 @@ export class RegisterComponent {
     }, {
       validators: this.passwordMatchValidator
     });
+  }
+  
+  ngOnInit(): void {
+    this.startImageRotation();
+  }
+  
+  ngOnDestroy(): void {
+    if (this.imageRotationInterval) {
+      clearInterval(this.imageRotationInterval);
+    }
+  }
+  
+  private startImageRotation(): void {
+    this.imageRotationInterval = setInterval(() => {
+      this.currentImageIndex.set((this.currentImageIndex() + 1) % this.gymImages.length);
+    }, 15000);
   }
 
   passwordMatchValidator(form: FormGroup) {
