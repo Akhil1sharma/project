@@ -76,6 +76,7 @@ const userRoutes = require('./routes/users');
 const exerciseRoutes = require('./routes/exercises');
 const workoutRoutes = require('./routes/workouts');
 const dietPlanRoutes = require('./routes/dietPlans');
+const gymRoutes = require('./routes/gyms');
 
 // Import error handler
 const errorHandler = require('./middleware/errorHandler');
@@ -86,6 +87,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/exercises', exerciseRoutes);
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/diet-plans', dietPlanRoutes);
+app.use('/api/gyms', gymRoutes);
 
 // Error handling middleware (must be after routes)
 app.use(errorHandler);

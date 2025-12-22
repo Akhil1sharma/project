@@ -7,8 +7,8 @@ exports.getUsers = async (req, res, next) => {
   try {
     const { role, isActive, search } = req.query;
     
-    // Build query
-    const query = {};
+    // Build query - ALWAYS filter by gymId for multi-tenancy
+    const query = { gymId: req.user.gymId };
     
     if (role) {
       query.role = role;
@@ -43,7 +43,7 @@ exports.getUsers = async (req, res, next) => {
 // @access  Private
 exports.getUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findOne({ _id: req.params.id, gymId: req.user.gymId });
 
     if (!user) {
       return res.status(404).json({
@@ -74,6 +74,7 @@ exports.getUser = async (req, res, next) => {
 // @access  Private (Admin)
 exports.createUser = async (req, res, next) => {
   try {
+    req.body.gymId = req.user.gymId;
     const user = await User.create(req.body);
 
     res.status(201).json({
@@ -91,7 +92,7 @@ exports.createUser = async (req, res, next) => {
 // @access  Private
 exports.updateUser = async (req, res, next) => {
   try {
-    let user = await User.findById(req.params.id);
+    let user = await User.findOne({ _id: req.params.id, gymId: req.user.gymId });
 
     if (!user) {
       return res.status(404).json({
@@ -138,7 +139,7 @@ exports.updateUser = async (req, res, next) => {
 // @access  Private (Admin)
 exports.deleteUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findOne({ _id: req.params.id, gymId: req.user.gymId });
 
     if (!user) {
       return res.status(404).json({

@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Gym = require('../models/Gym');
 const { generateToken } = require('../utils/jwt');
 
 // @desc    Register user
@@ -6,13 +7,35 @@ const { generateToken } = require('../utils/jwt');
 // @access  Public
 exports.register = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password, role, phone, dateOfBirth, gender } = req.body;
+    const { 
+      firstName, 
+      lastName, 
+      email, 
+      password, 
+      role, 
+      phone, 
+      dateOfBirth, 
+      gender,
+      gymCode,
+      gymName,
+      gymAddress,
+      gymPhone,
+      gymEmail
+    } = req.body;
 
     // Validate required fields
-    if (!firstName || !lastName || !email || !password) {
+    if (!firstName || !lastName || !email || !password || !role) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide firstName, lastName, email, and password'
+        message: 'Please provide firstName, lastName, email, password, and role'
+      });
+    }
+
+    // Validate role
+    if (!['admin', 'trainer', 'member'].includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid role. Must be admin, trainer, or member'
       });
     }
 
@@ -25,28 +48,118 @@ exports.register = async (req, res, next) => {
       });
     }
 
+    let gym;
+    let newGym = false;
+
+    // Handle different registration scenarios based on role
+    if (role === 'admin') {
+      // Admin creating a new gym
+      if (!gymName) {
+        return res.status(400).json({
+          success: false,
+          message: 'Gym name is required for admin registration'
+        });
+      }
+
+      // Generate unique gym code
+      const generatedGymCode = await Gym.generateGymCode(gymName);
+
+      // Create new gym
+      gym = await Gym.create({
+        gymName,
+        gymCode: generatedGymCode,
+        ownerId: null, // Will be updated after user creation
+        email: gymEmail || email,
+        phone: gymPhone || phone,
+        address: gymAddress || {},
+        subscriptionStatus: 'trial'
+      });
+
+      newGym = true;
+    } else {
+      // Trainer or Member joining existing gym
+      if (!gymCode) {
+        return res.status(400).json({
+          success: false,
+          message: 'Gym code is required for trainer and member registration'
+        });
+      }
+
+      // Validate gym code
+      gym = await Gym.getByCode(gymCode);
+      
+      if (!gym) {
+        return res.status(404).json({
+          success: false,
+          message: 'Invalid gym code. Please check and try again.'
+        });
+      }
+
+      // Check gym capacity limits
+
+      if (role === 'member') {
+        const memberCount = await User.countDocuments({ gymId: gym._id, role: 'member' });
+        if (memberCount >= gym.settings.maxMembers) {
+          return res.status(400).json({
+            success: false,
+            message: 'Gym has reached maximum member capacity'
+          });
+        }
+      } else if (role === 'trainer') {
+        const trainerCount = await User.countDocuments({ gymId: gym._id, role: 'trainer' });
+        if (trainerCount >= gym.settings.maxTrainers) {
+          return res.status(400).json({
+            success: false,
+            message: 'Gym has reached maximum trainer capacity'
+          });
+        }
+      }
+    }
+
     // Create user
     const user = await User.create({
       firstName,
       lastName,
       email: email.toLowerCase(),
       password,
-      role: role || 'member',
+      role,
       phone,
       dateOfBirth,
-      gender
+      gender,
+      gymId: gym._id,
+      joinedGymAt: new Date()
     });
 
+    // If admin, update gym's ownerId
+    if (role === 'admin' && newGym) {
+      gym.ownerId = user._id;
+      await gym.save();
+    }
+
+    // Update gym statistics
+    await gym.updateStatistics();
+
     // Generate token
-    const token = generateToken(user._id, user.role);
+    const token = generateToken(user._id, user.role, gym._id);
+
+    // Prepare response
+    const responseData = {
+      user,
+      token
+    };
+
+    // Include gym code for admin registration
+    if (role === 'admin' && newGym) {
+      responseData.gymCode = gym.gymCode;
+      responseData.message = `Gym created successfully! Your gym code is: ${gym.gymCode}. Share this code with trainers and members.`;
+    }
 
     res.status(201).json({
       success: true,
-      message: 'User registered successfully',
-      data: {
-        user,
-        token
-      }
+      message: role === 'admin' 
+        ? 'Gym and admin account created successfully' 
+        : `Successfully registered as ${role}`,
+      data: responseData
     });
   } catch (error) {
     next(error);
@@ -97,7 +210,7 @@ exports.login = async (req, res, next) => {
     }
 
     // Generate token
-    const token = generateToken(user._id, user.role);
+    const token = generateToken(user._id, user.role, user.gymId);
 
     res.status(200).json({
       success: true,
@@ -108,7 +221,8 @@ exports.login = async (req, res, next) => {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          role: user.role
+          role: user.role,
+          gymId: user.gymId
         },
         token
       }

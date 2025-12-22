@@ -48,6 +48,11 @@ const exerciseSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  gymId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Gym',
+    required: [true, 'Gym ID is required']
+  },
   isActive: {
     type: Boolean,
     default: true

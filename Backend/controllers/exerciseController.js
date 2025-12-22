@@ -7,8 +7,8 @@ exports.getExercises = async (req, res, next) => {
   try {
     const { category, difficulty, equipment, search, isActive } = req.query;
     
-    // Build query
-    const query = {};
+    // Build query - ALWAYS filter by gymId for multi-tenancy
+    const query = { gymId: req.user.gymId };
     
     if (category) {
       query.category = category;
@@ -52,7 +52,7 @@ exports.getExercises = async (req, res, next) => {
 // @access  Private
 exports.getExercise = async (req, res, next) => {
   try {
-    const exercise = await Exercise.findById(req.params.id)
+    const exercise = await Exercise.findOne({ _id: req.params.id, gymId: req.user.gymId })
       .populate('createdBy', 'firstName lastName email');
 
     if (!exercise) {
@@ -77,6 +77,7 @@ exports.getExercise = async (req, res, next) => {
 exports.createExercise = async (req, res, next) => {
   try {
     req.body.createdBy = req.user._id;
+    req.body.gymId = req.user.gymId;
     const exercise = await Exercise.create(req.body);
 
     res.status(201).json({
@@ -94,7 +95,7 @@ exports.createExercise = async (req, res, next) => {
 // @access  Private (Trainer, Admin)
 exports.updateExercise = async (req, res, next) => {
   try {
-    let exercise = await Exercise.findById(req.params.id);
+    let exercise = await Exercise.findOne({ _id: req.params.id, gymId: req.user.gymId });
 
     if (!exercise) {
       return res.status(404).json({
@@ -131,7 +132,7 @@ exports.updateExercise = async (req, res, next) => {
 // @access  Private (Trainer, Admin)
 exports.deleteExercise = async (req, res, next) => {
   try {
-    const exercise = await Exercise.findById(req.params.id);
+    const exercise = await Exercise.findOne({ _id: req.params.id, gymId: req.user.gymId });
 
     if (!exercise) {
       return res.status(404).json({

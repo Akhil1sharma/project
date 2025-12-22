@@ -7,8 +7,8 @@ exports.getDietPlans = async (req, res, next) => {
   try {
     const { goal, search, isPublic, createdBy } = req.query;
     
-    // Build query
-    const query = {};
+    // Build query - ALWAYS filter by gymId for multi-tenancy
+    const query = { gymId: req.user.gymId };
     
     if (goal) {
       query.goal = goal;
@@ -56,7 +56,7 @@ exports.getDietPlans = async (req, res, next) => {
 // @access  Private
 exports.getDietPlan = async (req, res, next) => {
   try {
-    const dietPlan = await DietPlan.findById(req.params.id)
+    const dietPlan = await DietPlan.findOne({ _id: req.params.id, gymId: req.user.gymId })
       .populate('createdBy', 'firstName lastName email');
 
     if (!dietPlan) {
@@ -91,6 +91,7 @@ exports.getDietPlan = async (req, res, next) => {
 exports.createDietPlan = async (req, res, next) => {
   try {
     req.body.createdBy = req.user._id;
+    req.body.gymId = req.user.gymId;
     
     // Calculate total calories for meals if not provided
     if (req.body.meals && req.body.meals.length > 0) {
@@ -118,7 +119,7 @@ exports.createDietPlan = async (req, res, next) => {
 // @access  Private (Trainer, Admin)
 exports.updateDietPlan = async (req, res, next) => {
   try {
-    let dietPlan = await DietPlan.findById(req.params.id);
+    let dietPlan = await DietPlan.findOne({ _id: req.params.id, gymId: req.user.gymId });
 
     if (!dietPlan) {
       return res.status(404).json({
@@ -164,7 +165,7 @@ exports.updateDietPlan = async (req, res, next) => {
 // @access  Private (Trainer, Admin)
 exports.deleteDietPlan = async (req, res, next) => {
   try {
-    const dietPlan = await DietPlan.findById(req.params.id);
+    const dietPlan = await DietPlan.findOne({ _id: req.params.id, gymId: req.user.gymId });
 
     if (!dietPlan) {
       return res.status(404).json({

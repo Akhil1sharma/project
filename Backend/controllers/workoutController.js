@@ -8,8 +8,8 @@ exports.getWorkouts = async (req, res, next) => {
   try {
     const { type, difficulty, search, isPublic, createdBy } = req.query;
     
-    // Build query
-    const query = {};
+    // Build query - ALWAYS filter by gymId for multi-tenancy
+    const query = { gymId: req.user.gymId };
     
     if (type) {
       query.type = type;
@@ -62,7 +62,7 @@ exports.getWorkouts = async (req, res, next) => {
 // @access  Private
 exports.getWorkout = async (req, res, next) => {
   try {
-    const workout = await Workout.findById(req.params.id)
+    const workout = await Workout.findOne({ _id: req.params.id, gymId: req.user.gymId })
       .populate('createdBy', 'firstName lastName email')
       .populate('exercises.exercise');
 
@@ -98,6 +98,7 @@ exports.getWorkout = async (req, res, next) => {
 exports.createWorkout = async (req, res, next) => {
   try {
     req.body.createdBy = req.user._id;
+    req.body.gymId = req.user.gymId;
     
     // Validate exercises exist
     if (req.body.exercises && req.body.exercises.length > 0) {
@@ -129,7 +130,7 @@ exports.createWorkout = async (req, res, next) => {
 // @access  Private (Trainer, Admin)
 exports.updateWorkout = async (req, res, next) => {
   try {
-    let workout = await Workout.findById(req.params.id);
+    let workout = await Workout.findOne({ _id: req.params.id, gymId: req.user.gymId });
 
     if (!workout) {
       return res.status(404).json({
@@ -181,7 +182,7 @@ exports.updateWorkout = async (req, res, next) => {
 // @access  Private (Trainer, Admin)
 exports.deleteWorkout = async (req, res, next) => {
   try {
-    const workout = await Workout.findById(req.params.id);
+    const workout = await Workout.findOne({ _id: req.params.id, gymId: req.user.gymId });
 
     if (!workout) {
       return res.status(404).json({

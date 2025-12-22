@@ -76,6 +76,11 @@ const workoutSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  gymId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Gym',
+    required: [true, 'Gym ID is required']
+  },
   isPublic: {
     type: Boolean,
     default: false

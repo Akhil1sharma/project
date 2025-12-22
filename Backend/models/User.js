@@ -32,6 +32,19 @@ const userSchema = new mongoose.Schema({
     default: 'member',
     required: true
   },
+  gymId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Gym',
+    required: [true, 'Gym ID is required']
+  },
+  invitedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  joinedGymAt: {
+    type: Date,
+    default: Date.now
+  },
   phone: {
     type: String,
     trim: true

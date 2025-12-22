@@ -20,11 +20,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
   showPassword = signal(false);
-  
+
   // Image rotation
   currentImageIndex = signal(0);
   private imageRotationInterval?: ReturnType<typeof setInterval>;
-  
+
   readonly gymImages = [
     'low-angle-view-unrecognizable-muscular-build-man-preparing-lifting-barbell-health-club_637285-2497.avif',
     'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop',
@@ -40,19 +40,19 @@ export class LoginComponent implements OnInit, OnDestroy {
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
-  
+
   ngOnInit(): void {
     // Start image rotation every 15 seconds
     this.startImageRotation();
   }
-  
+
   ngOnDestroy(): void {
     // Clean up interval when component is destroyed
     if (this.imageRotationInterval) {
       clearInterval(this.imageRotationInterval);
     }
   }
-  
+
   private startImageRotation(): void {
     this.imageRotationInterval = setInterval(() => {
       this.currentImageIndex.set((this.currentImageIndex() + 1) % this.gymImages.length);

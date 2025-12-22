@@ -4,11 +4,12 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-i
 const JWT_EXPIRE = process.env.JWT_EXPIRE || '7d';
 
 // Generate JWT token
-const generateToken = (userId, role) => {
+const generateToken = (userId, role, gymId) => {
   return jwt.sign(
     { 
       userId, 
-      role 
+      role,
+      gymId 
     },
     JWT_SECRET,
     { 
